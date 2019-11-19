@@ -1,5 +1,5 @@
 const express = require('express');
-const compression = require('compression');
+// const compression = require('compression');
 // const cors = require('cors');
 // const morgan = require('morgan');
 const path = require('path');
@@ -9,13 +9,13 @@ const port = process.env.PORT || 3007
 
 const app = express();
 
-app.use(compression());
-app.use(cors());
+// app.use(compression());
+// app.use(cors());
 // app.use(morgan('dev'));
 
-app.use(express.static('public'))
+// app.use(express.static('public'))
 
-app.post('/upload', function(req, res) {
+app.post('/upload', function (req, res) {
   console.log(req.files.foo); // the uploaded file object
   /*
 req.files.foo.name: "car.jpg"
