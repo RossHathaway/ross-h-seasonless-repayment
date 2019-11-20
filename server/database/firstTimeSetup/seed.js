@@ -3,8 +3,8 @@ const readXlsxFile = require('read-excel-file/node');
 const fs = require('fs')
 const path = require('path')
 
-function readFile(name) {
-  return readXlsxFile(fs.createReadStream(path.join(__dirname, `${name}.xlsx`)))
+function readFile(name, schema) {
+  return readXlsxFile(fs.createReadStream(path.join(__dirname, `${name}.xlsx`), schema))
 }
 
 module.exports = function seedDB() {
