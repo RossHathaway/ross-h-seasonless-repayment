@@ -1,8 +1,35 @@
 const db = require('./index')
 
 module.exports = {
-  getCustomer: (id, cb) => db.all(`SELECT * FROM Customers WHERE CustomerID = (?)`, [id], (err, rows) => cb(err, rows)),
-  getSeason: (id, cb) => db.all(`SELECT * FROM Seasons WHERE SeasonID = (?)`, [id], (err, rows) => cb(err, rows)),
+  getRelevantCustomerSummaries: (uploadedRows) => {
+
+    const findSummaries = db.prepare('SELECT * FROM CustomerSummaries WHERE CustomerID = (?)  AND TotalRepaid < TotalCredit ORDER BY SeasonID asc;')
+
+    const relevantSummaries = uploadedRows.map(({ customerID }) => {
+      new Promise((resolve, reject) => {
+        const summaries = []
+        const handleSummary = (err, summary) => {
+          if (err) {
+            reject(err)
+          } else {
+            summaries.push(summary)
+          }
+        }
+        const onRowCompletion = (err) => {
+          if (err) {
+            reject(err)
+          } else {
+            console.log('summaries in onRowCompletion', summaries)
+            resolve(summaries)
+          }
+        }
+        findSummaries.each(customerID, handleSummary, onRowCompletion)
+      })
+    })
+    // console.log(Promise.all(relevantSummaries))
+    return Promise.all(relevantSummaries)
+    // .then(findSummaries.finalize())
+  },
   formatTime: (date) => {
     const month = date.getMonth() + 1
     const formattedMonth = month < 10 ? `0${month}` : month
