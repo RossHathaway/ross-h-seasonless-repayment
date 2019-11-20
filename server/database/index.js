@@ -1,8 +1,4 @@
-const Sqlite = require('sqlite3').verbose()
-
-const db = new Sqlite.Database('repaymentInfo.db', (err) => {
-  if (err) console.err(err)
-  else console.log('connected to repaymentInfo.db')
-})
+const Database = require('better-sqlite3');
+const db = new Database('repaymentInfo.db', { verbose: console.log });
 
 module.exports = db

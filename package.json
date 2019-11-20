@@ -12,9 +12,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "better-sqlite3": "^5.4.3",
+    "better-sqlite3-helper": "^2.1.1",
     "express": "^4.17.1",
     "express-fileupload": "^1.1.6-alpha.6",
-    "read-excel-file": "^4.0.4",
-    "sqlite3": "^4.1.0"
+    "read-excel-file": "^4.0.4"
   }
 }
