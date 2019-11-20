@@ -6,9 +6,9 @@ const fs = require('fs')
 // const path = require('path');
 const fileUpload = require('express-fileupload');
 const readXlsxFile = require('read-excel-file/node');
-const checkHeaderRow = require('./checkHeaderRow')
+// const checkHeaderRow = require('./checkHeaderRow')
 // const dbHelpers = require('./database/helpers')
-const uploadSchema = require('./database/helpers').uploadSchema
+const uploadSchema = require('./validationSchemas').uploadSchema
 const db = require('./database/index')
 
 const app = express();
@@ -24,7 +24,10 @@ app.use(fileUpload({
 // app.use(cors());
 // app.use(morgan('dev'));
 
-db.all('SELECT * FROM Seasons', console.log)
+db.all('SELECT * FROM Seasons;', (error, rows) => {
+  console.log('Seasons 1st row start date', rows[0].StartDate)
+  // console.log(new Date(rows[0].StartDate).toDateString())
+})
 
 
 app.post('/upload', function (req, res) {
@@ -36,8 +39,8 @@ app.post('/upload', function (req, res) {
 
   readXlsxFile(fs.createReadStream(repayments.tempFilePath), { schema: uploadSchema })
     .then(({ errors, rows }) => {
-      console.log('rows from upload', rows)
-
+      // console.log('rows from upload', rows)
+      console.log('date', rows[0].date.toDateString())
       if (errors.length > 0) {
         // TODO: test to make sure errors are working properly
         res.end('Error in spreadsheet formatting:', errors)
@@ -55,7 +58,9 @@ app.post('/upload', function (req, res) {
 // otherwise, 
   // if debt, apply to oldest season with debt, then cascade
 
-If a client does NOT have outstanIf a client starts out with 2 seasons of outstanding credit (debt):
+If a client does NOT have outstan 
+
+If a client starts out with 2 seasons of outstanding credit (debt):
 
 CustomerSummary (Client owes 20)
 Season = 2011

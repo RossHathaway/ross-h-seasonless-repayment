@@ -1,38 +1,48 @@
-const db = require('../index')
 const readXlsxFile = require('read-excel-file/node');
 const fs = require('fs')
 const path = require('path')
 
-function readFile(name, schema) {
-  return readXlsxFile(fs.createReadStream(path.join(__dirname, `${name}.xlsx`), schema))
+const db = require('../index')
+const validationSchemas = require('../../validationSchemas')
+const formatTime = require('../helpers').formatTime
+
+function readFile(sheetName, schema) {
+  return readXlsxFile(fs.createReadStream(path.join(__dirname, `./IT Dev Final Interview - Seasonless Repayment.xlsx`)), { schema, sheet: sheetName })
 }
 
 module.exports = function seedDB() {
 
   db.parallelize(function () {
-    readFile('Customers').then((rows) => {
+    // TODO: error handling
+    readFile('Customers', validationSchemas.customerSchema)
+      .then(({ errors, rows }) => {
+        const insertCustomer = db.prepare("INSERT INTO Customers(CustomerID, CustomerName) VALUES (?, ?)");
 
-      const insertCustomer = db.prepare("INSERT INTO Customers(CustomerID, CustomerName) VALUES (?, ?)");
+        rows.forEach((row) => insertCustomer.run(row.CustomerID, row.customerName))
 
-      rows.map((row) => insertCustomer.run(row[0], row[1]))
+        insertCustomer.finalize();
+      })
 
-      insertCustomer.finalize();
-    })
-    readFile('Seasons').then((rows) => {
+    readFile('Seasons', validationSchemas.seasonSchema)
+      .then(({ errors, rows }) => {
+        const insertSeason = db.prepare("INSERT INTO Seasons(SeasonID, SeasonName, StartDate) VALUES (?, ?, ?)");
+        rows.forEach((row) => {
+          insertSeason.run(row.seasonID, row.seasonName, formatTime(row.startDate)
+          )
+        })
 
-      const insertSeason = db.prepare("INSERT INTO Seasons(SeasonID, SeasonName, StartDate) VALUES (?, ?, ?)");
+        insertSeason.finalize();
+      })
 
-      rows.map((row) => insertSeason.run(row[0], row[1], row[2]))
+    readFile('CustomerSummaries', validationSchemas.summarySchema)
+      .then(({ errors, rows }) => {
+        const insertSummary = db.prepare("INSERT INTO CustomerSummaries(CustomerID, SeasonID, TotalRepaid, TotalCredit) VALUES (?, ?, ?, ?)");
 
-      insertSeason.finalize();
-    })
-  })
+        rows.forEach((row) => {
+          insertSummary.run(row.customerID, row.seasonID, row.totalRepaid, row.totalCredit)
+        })
 
-  readFile('CustomerSummaries').then((rows) => {
-    const insertSummary = db.prepare("INSERT INTO CustomerSummaries(CustomerID, SeasonID, TotalRepaid, TotalCredit) VALUES (?, ?, ?, ?)");
-
-    rows.map((row) => insertSummary.run(row[0], row[1], row[2], row[3]))
-
-    insertSummary.finalize();
+        insertSummary.finalize();
+      })
   })
 }
