@@ -11,52 +11,52 @@ const requiredNum = {
 module.exports = {
   customerSchema: {
     CustomerID: {
-      prop: 'customerID', ...requiredNum
+      prop: 'CustomerID', ...requiredNum
     },
     CustomerName: {
-      prop: 'customerName', ...requiredString
+      prop: 'CustomerName', ...requiredString
     }
   },
   seasonSchema: {
     SeasonID: {
-      prop: 'seasonID', ...requiredNum
+      prop: 'SeasonID', ...requiredNum
     },
     SeasonName: {
-      prop: 'seasonName', ...requiredString
+      prop: 'SeasonName', ...requiredString
     },
     StartDate: {
-      prop: 'startDate', type: Date, required: true
+      prop: 'StartDate', type: Date, required: true
     },
     EndDate: {
-      prop: 'endDate', type: Date
+      prop: 'EndDate', type: Date
     }
   },
   summarySchema: {
     CustomerID: {
-      prop: 'customerID', ...requiredNum
+      prop: 'CustomerID', ...requiredNum
     },
     SeasonID: {
-      prop: 'seasonID', ...requiredNum
+      prop: 'SeasonID', ...requiredNum
     },
     TotalRepaid: {
-      prop: 'totalRepaid', ...requiredNum
+      prop: 'TotalRepaid', ...requiredNum
     },
     TotalCredit: {
-      prop: 'totalCredit', ...requiredNum
+      prop: 'TotalCredit', ...requiredNum
     }
   },
   uploadSchema: {
     CustomerID: {
-      prop: 'customerID', ...requiredNum
+      prop: 'CustomerID', ...requiredNum
     },
     SeasonID: {
-      prop: 'seasonID', type: Number
+      prop: 'SeasonID', type: Number
     },
     Date: {
-      prop: 'date', type: Date, required: true
+      prop: 'Date', type: Date, required: true
     },
     Amount: {
-      prop: 'amount', ...requiredNum
+      prop: 'Amount', ...requiredNum
     }
   },
   repaymentSchema: {

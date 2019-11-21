@@ -5,14 +5,13 @@
   "main": "index.js",
   "scripts": {
     "serve": "nodemon server/index.js",
-    "database:setup": "node server/database/firstTimeSetup/index.js",
+    "seedDB": "node server/database/firstTimeSetup/seed.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "better-sqlite3": "^5.4.3",
     "better-sqlite3-helper": "^2.1.1",
     "express": "^4.17.1",
     "express-fileupload": "^1.1.6-alpha.6",

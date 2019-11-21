@@ -1,9 +1,9 @@
-const db = require('./index')
+const db = require('better-sqlite3-helper')
 
 module.exports = {
   getRelevantCustomerSummaries: (uploadedRows) => {
 
-    const findSummaries = db.prepare('SELECT * FROM CustomerSummaries WHERE CustomerID = (?)  AND TotalRepaid < TotalCredit ORDER BY SeasonID asc;')
+    const findSummaries = db().prepare('SELECT * FROM CustomerSummaries WHERE CustomerID = (?) AND TotalRepaid < TotalCredit ORDER BY SeasonID asc;')
 
     const relevantSummaries = uploadedRows.map(({ customerID }) => {
       new Promise((resolve, reject) => {
