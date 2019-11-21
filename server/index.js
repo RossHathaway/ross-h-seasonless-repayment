@@ -45,7 +45,7 @@ app.post('/upload', function (req, res) {
 
           const recordsWithDebt = summaryRecords.map((record) => ({ ...record, debt: record.TotalCredit - record.TotalRepaid }))
 
-          let paymentToBeApplied = row.amount
+          let paymentToBeApplied = row.Amount
 
           for (let i = 0; i < recordsWithDebt.length; i++) {
             const debtRecord = recordsWithDebt[i]
@@ -59,20 +59,56 @@ app.post('/upload', function (req, res) {
               })
               // update future CustomerSummary here or later
               break
-            } else {
+            } else if (i === recordsWithDebt.length - 1) {
+              // check if debtRecord is same as most recent season's CustomerSummary record
+              const customersMostRecentSeason = db().query('SELECT * FROM CustomerSummaries WHERE CustomerID = (?) ORDER BY SeasonID desc LIMIT 1;', debtRecord.CustomerID)[0];
+
+              let debtRecordIsMostRecent = true
+              for (let key in customersMostRecentSeason) {
+                if (debtRecord[key] !== customersMostRecentSeason[key]) {
+                  debtRecordIsMostRecent = false
+                }
+              }
+              if (debtRecordIsMostRecent) {
+                // add payment to most recent season
+                newRepaymentRecords.push({
+                  ...row,
+                  Amount: paymentToBeApplied,
+                  SeasonID: debtRecord.SeasonID,
+                  ParentID: newRepaymentRecords.length - i
+                })
+                break
+              } else {
+                // add payment to season with debt and make another transaction adding leftover to most recent
+                newRepaymentRecords.push({
+                  ...row,
+                  Amount: debtRecord.debt,
+                  SeasonID: debtRecord.SeasonID,
+                  ParentID: newRepaymentRecords.length - i
+                })
+                paymentToBeApplied -= debtRecord.debt
+
+                newRepaymentRecords.push({
+                  ...row,
+                  Amount: paymentToBeApplied,
+                  SeasonID: customersMostRecentSeason.SeasonID,
+                  ParentID: newRepaymentRecords.length - i // TODO
+                })
+              }
               newRepaymentRecords.push({
                 ...row,
-                Amount: paymentToBeApplied,
+                Amount: debtRecord.debt,
                 SeasonID: debtRecord.SeasonID,
                 ParentID: newRepaymentRecords.length - i
               })
               paymentToBeApplied -= debtRecord.debt
+
             }
-            // if paymentToBeApplied has leftover, add to most recent season. If last transaction added to most recent season, combine into one transaction 
           }
         }
       })
-
+      console.log('newRepaymentRecords', newRepaymentRecords)
+      res.json(newRepaymentRecords)
     })
   /*
 
